@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- Path to Vintage Story install dir containing VintagestoryAPI.dll -->
+    <VintageStoryPath>/opt/server</VintageStoryPath>
+  </PropertyGroup>
+</Project>

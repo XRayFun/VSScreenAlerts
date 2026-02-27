@@ -1,0 +1,16 @@
+{
+  "type": "Code",
+  "modid": "vsscreenalerts",
+  "name": "VS Screen Alerts",
+  "authors": [
+    "XRayFun"
+  ],
+  "description": "Server command to show arbitrary text on players screens (HUD overlay).",
+  "version": "1.0.2",
+  "side": "Universal",
+  "requiredOnClient": true,
+  "requiredOnServer": true,
+  "dependencies": {
+    "game": "1.21.0"
+  }
+}

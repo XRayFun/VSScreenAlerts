@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Optional local (not committed) settings -->
+  <Import Project="Properties/localSettings.props" Condition="Exists('Properties/localSettings.props')" />
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>VSScreenAlerts</AssemblyName>
+
+    <!-- Fallback to env var -->
+    <VintageStoryPath Condition="'$(VintageStoryPath)'==''">$(VINTAGE_STORY)</VintageStoryPath>
+  </PropertyGroup>
+
+  <Target Name="CheckVintageStoryPath" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(VintageStoryPath)'==''"
+           Text="VintageStoryPath is not set. Set env VINTAGE_STORY or create Properties/localSettings.props or build with -p:VintageStoryPath=/path/to/VintageStory" />
+    <Error Condition="!Exists('$(VintageStoryPath)/VintagestoryAPI.dll')"
+           Text="Cannot find VintagestoryAPI.dll in '$(VintageStoryPath)'. Check VintageStoryPath (install directory)." />
+  </Target>
+
+  <ItemGroup>
+    <Reference Include="VintagestoryAPI">
+      <HintPath>$(VintageStoryPath)/VintagestoryAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Try to locate VS-bundled protobuf-net (different installs place it in different folders) -->
+  <PropertyGroup>
+    <ProtobufNetDll Condition="Exists('$(VintageStoryPath)/protobuf-net.dll')">$(VintageStoryPath)/protobuf-net.dll</ProtobufNetDll>
+    <ProtobufNetDll Condition="'$(ProtobufNetDll)'=='' and Exists('$(VintageStoryPath)/Lib/protobuf-net.dll')">$(VintageStoryPath)/Lib/protobuf-net.dll</ProtobufNetDll>
+    <ProtobufNetDll Condition="'$(ProtobufNetDll)'=='' and Exists('$(VintageStoryPath)/lib/protobuf-net.dll')">$(VintageStoryPath)/lib/protobuf-net.dll</ProtobufNetDll>
+
+    <ProtobufNetCoreDll Condition="Exists('$(VintageStoryPath)/protobuf-net.Core.dll')">$(VintageStoryPath)/protobuf-net.Core.dll</ProtobufNetCoreDll>
+    <ProtobufNetCoreDll Condition="'$(ProtobufNetCoreDll)'=='' and Exists('$(VintageStoryPath)/Lib/protobuf-net.Core.dll')">$(VintageStoryPath)/Lib/protobuf-net.Core.dll</ProtobufNetCoreDll>
+    <ProtobufNetCoreDll Condition="'$(ProtobufNetCoreDll)'=='' and Exists('$(VintageStoryPath)/lib/protobuf-net.Core.dll')">$(VintageStoryPath)/lib/protobuf-net.Core.dll</ProtobufNetCoreDll>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(ProtobufNetDll)'!=''">
+    <Reference Include="protobuf-net">
+      <HintPath>$(ProtobufNetDll)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- If VS ships protobuf-net v3 split, reference Core too -->
+  <ItemGroup Condition="'$(ProtobufNetCoreDll)'!=''">
+    <Reference Include="protobuf-net.Core">
+      <HintPath>$(ProtobufNetCoreDll)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Fallback: compile-time only (should not be used on a real VS server install) -->
+  <ItemGroup Condition="'$(ProtobufNetDll)'=='' AND '$(ProtobufNetCoreDll)'==''">
+    <PackageReference Include="protobuf-net" Version="3.2.52"
+                      PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+</Project>

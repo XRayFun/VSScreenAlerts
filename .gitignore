@@ -1,0 +1,14 @@
+# build outputs
+bin/
+obj/
+
+# local per-developer path overrides
+./Properties/localSettings.props
+
+# common OS/editor stuff
+.DS_Store
+Thumbs.db
+*.user
+*.suo
+.vscode/
+.idea/
